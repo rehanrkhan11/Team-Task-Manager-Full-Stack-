@@ -1,0 +1,36 @@
+# Node modules (ignore everywhere)
+node_modules/
+
+# Build output (frontend)
+frontend/dist/
+
+# Environment variables (secrets)
+.env
+.env.*
+backend/.env
+
+# Keep example env file
+!.env.example
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# Cache / temp
+.cache/
+.tmp/
