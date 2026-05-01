@@ -1,28 +1,30 @@
 # ⬡ ProjectFlow
 
-A full-stack project management app with role-based access control.
+A clean, full-stack project management tool designed for teams that need role-based control without the bloat. 
 
-## Tech Stack
+## 🛠 Tech Stack
 
-- **Backend**: Node.js + Express + SQLite (better-sqlite3)
-- **Frontend**: React + Vite + React Router
-- **Auth**: JWT (7-day tokens)
-- **DB**: SQLite (zero-config, file-based — perfect for Railway)
+*   **Backend**: Node.js + Express + SQLite (via `better-sqlite3`)
+*   **Frontend**: React + Vite + React Router
+*   **Auth**: JWT with 7-day expiration
+*   **Database**: SQLite — zero-config and file-based, making it perfect for quick Railway deployments
 
-## Features
+## ✨ Features
 
-- 🔐 JWT Authentication (signup/login)
-- 📁 Project creation & management
-- 👥 Team members with **Admin / Member** roles
-- ✅ Task CRUD with status (Todo / In Progress / Done), priority, assignee, due date
-- 📊 Dashboard with stats, progress bars, overdue tracking
-- 🗂 Kanban board + list view per project
-- 🔒 Role-based access control throughout
+*   🔐 **Secure Auth**: Full signup and login flow using JSON Web Tokens.
+*   📁 **Project Hub**: Create and manage multiple workstreams in one place.
+*   👥 **Team Management**: Invite members and assign **Admin** or **Member** roles.
+*   ✅ **Task Tracking**: Full CRUD support for tasks with status (Todo/In Progress/Done), priority levels, assignees, and due dates.
+*   📊 **Visual Insights**: A dashboard featuring progress bars, stats, and overdue task tracking.
+*   🗂 **Flexible Views**: Switch between a Kanban board and a standard list view for every project.
+*   🔒 **Permission Layers**: Built-in role-based access control (RBAC) to keep data secure.
 
-## Role Permissions
+---
+
+## 🚦 Role Permissions
 
 | Action | Owner | Admin | Member |
-|---|---|---|---|
+| :--- | :---: | :---: | :---: |
 | Create project | ✅ | — | — |
 | Delete project | ✅ | ❌ | ❌ |
 | Edit project | ✅ | ✅ | ❌ |
@@ -32,89 +34,71 @@ A full-stack project management app with role-based access control.
 | Edit own/assigned tasks | ✅ | ✅ | ✅ |
 | Delete tasks | ✅ | ✅ | Own only |
 
-## Local Development
 
-### 1. Backend
 
+---
+
+## 💻 Local Development
+
+### 1. Spin up the Backend
 ```bash
 cd backend
-cp .env.example .env     # edit JWT_SECRET
+cp .env.example .env     # Remember to set your JWT_SECRET
 npm install
-npm run dev              # runs on :3001
+npm run dev              # Server runs on port 3001
 ```
 
-### 2. Frontend
 
+### 2. Launch the Frontend
 ```bash
 cd frontend
 npm install
-npm run dev              # runs on :5173, proxies /api to :3001
+npm run dev              # Runs on port 5173 (proxies /api requests to 3001)
 ```
 
-## Deploy to Railway
 
-### Step 1 — Push to GitHub
+---
 
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/YOUR_USER/projectflow.git
-git push -u origin main
-```
+## 🚀 Deploying to Railway
 
-### Step 2 — Create Railway project
+### Step 1: Push to GitHub
+Initialize your repo and push your code to a new GitHub repository.
 
-1. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
-2. Select your repo
+### Step 2: Connect to Railway
+1. Go to [railway.app](https://railway.app).
+2. Start a **New Project** and select **Deploy from GitHub**.
+3. Choose your `projectflow` repository.
 
-### Step 3 — Set environment variables in Railway
+### Step 3: Configure Environment Variables
+Add these in the Railway dashboard:
+*   `NODE_ENV=production`
+*   `JWT_SECRET=your_secret_string`
+*   `PORT=3001`
+*   `DB_PATH=/app/data/projectflow.db`
 
-```
-NODE_ENV=production
-JWT_SECRET=your_long_random_secret_here
-PORT=3001
-DB_PATH=/app/data/projectflow.db
-```
 
-> **Tip**: For a persistent DB on Railway, add a Volume and mount it at `/app/data`. Without a volume the DB resets on redeploy (fine for testing).
+### Step 4: Persistent Storage (Important!)
+By default, Railway filesystems are ephemeral. To save your data between deployments:
+1. Go to your service settings and **Add Volume**.
+2. Set the mount path to `/app/data`.
+3. Ensure your `DB_PATH` variable points to this directory.
 
-### Step 4 — Deploy
+---
 
-Railway auto-detects the `railway.toml` and runs:
-- Build: `npm run build` (installs deps + builds React)
-- Start: `npm start` (serves both API and static frontend from Express)
-
-### Adding a Volume (recommended for production)
-
-1. Railway Dashboard → your service → Volumes → Add Volume
-2. Mount path: `/app/data`
-3. Set `DB_PATH=/app/data/projectflow.db`
-
-## API Reference
+## 📖 API Quick Reference
 
 ### Auth
-- `POST /api/auth/signup` — `{ name, email, password }`
-- `POST /api/auth/login` — `{ email, password }`
-- `GET /api/auth/me` — requires auth
+*   `POST /api/auth/signup` — Register a new user.
+*   `POST /api/auth/login` — Get your access token.
+*   `GET /api/auth/me` — Verify your session.
 
-### Projects
-- `GET /api/projects`
-- `POST /api/projects` — `{ name, description? }`
-- `GET /api/projects/:id`
-- `PUT /api/projects/:id`
-- `DELETE /api/projects/:id`
-- `POST /api/projects/:id/members` — `{ email, role }`
-- `PUT /api/projects/:id/members/:userId` — `{ role }`
-- `DELETE /api/projects/:id/members/:userId`
+### Projects & Members
+*   `GET /api/projects` — List all accessible projects.
+*   `POST /api/projects` — Start a new project.
+*   `POST /api/projects/:id/members` — Add someone to your team.
 
 ### Tasks
-- `GET /api/projects/:projectId/tasks?status=&priority=&assignee=`
-- `POST /api/projects/:projectId/tasks`
-- `PUT /api/projects/:projectId/tasks/:taskId`
-- `DELETE /api/projects/:projectId/tasks/:taskId`
+*   `GET /api/projects/:projectId/tasks` — Fetch tasks (supports status/priority filters).
+*   `PUT /api/projects/:projectId/tasks/:taskId` — Update task progress or details.
 
-### Dashboard
-- `GET /api/dashboard`
-
-All authenticated endpoints require `Authorization: Bearer <token>`.
+> **Note**: All protected routes require an `Authorization: Bearer <token>` header.
